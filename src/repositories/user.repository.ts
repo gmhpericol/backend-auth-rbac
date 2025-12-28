@@ -1,6 +1,13 @@
 import { Role } from "../constants/role.js";
 import { prisma } from "../config/prisma.js";
 
+function mapUser(user: any) {
+  return {
+    ...user,
+    role: user.role as Role,
+  };
+}
+
 export const userRepository = {
   async findAll() {
     return prisma.user.findMany({
@@ -14,15 +21,21 @@ export const userRepository = {
   },
   
   async findById(id: string) {
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id }
     });
+
+    return user ? mapUser(user) : null;
+
   },
 
   async findByEmail(email: string) {
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email }
     });
+
+    return user ? mapUser(user) : null;
+
   },
 
   async deleteById(id: string) {
@@ -32,10 +45,13 @@ export const userRepository = {
   },
 
   async updateRoleById(id: string, role: Role) {
-    return prisma.user.update({
+    const user = await prisma.user.update({
       where: { id },
       data: { role }
     });
+
+    return mapUser(user);
+
   },
 
 
@@ -44,12 +60,15 @@ export const userRepository = {
     name: string,
     password: string
   ) {
-    return prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         name,
         password
       }
     });
+
+    return mapUser(user);
+
   }
 };
