@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
@@ -83,14 +83,11 @@
     "wrappy": "^1.0.2",
     "zod": "^4.2.1"
   },
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/app.js"
-  },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.0.3",
     "prisma": "^6.19.1",
     "typescript": "^5.9.3"
   },

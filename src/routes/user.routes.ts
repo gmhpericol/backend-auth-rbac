@@ -3,7 +3,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { requireRole } from "../middlewares/requireRole.middleware.js";
 import { protectManager } from "../middlewares/protectManager.middleware.js";
 import { deleteUser, getUsers, updateUserRole } from "../controllers/user.controller.js";
-import { Prisma, Role } from "@prisma/client";
+import { Role } from "../constants/role.js";
 
 const router = Router();
 

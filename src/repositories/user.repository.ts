@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "../constants/role.js";
 import { prisma } from "../config/prisma.js";
 
 export const userRepository = {

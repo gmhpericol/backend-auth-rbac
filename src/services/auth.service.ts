@@ -1,7 +1,7 @@
 import { userRepository } from "../repositories/user.repository.js";
 import { passwordService } from "./password.service.js";
 import { tokenService } from "./token.service.js";
-import { Role } from "@prisma/client";
+import { Role } from "../constants/role.js";
 
 export const authService = {
   async register(email: string, name: string, password: string) {
