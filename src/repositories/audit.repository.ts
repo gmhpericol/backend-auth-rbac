@@ -12,4 +12,13 @@ export const auditRepository = {
       data: params,
     });
   },
+
+  async findAll(params?: { take?: number; skip?: number }) {
+    return prisma.auditLog.findMany({
+        orderBy: { createdAt: "desc" },
+        take: params?.take ?? 50,
+        skip: params?.skip ?? 0,
+    });
+  }
+
 };

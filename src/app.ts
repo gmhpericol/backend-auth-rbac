@@ -7,6 +7,7 @@ import healthRoutes from "./routes/health.routes.js";
 import helmet from "helmet";
 import { authRateLimiter, generalRateLimiter } from "./middlewares/rateLimit.middleware.js";
 import cors from "cors";
+import auditRoutes from "./routes/audit.routes.js";
 
 const allowedOrigins = [
   "http://localhost:3000",       // dev
@@ -43,6 +44,7 @@ app.use(generalRateLimiter);
 app.use("/auth", authRateLimiter, authRoutes);
 app.use("/health", healthRoutes);
 app.use("/users", userRoutes);
+app.use("/audit", auditRoutes);
 
 //  trebuie ultimul
 app.use(errorMiddleware);
