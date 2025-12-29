@@ -5,6 +5,7 @@ import { protectManager } from "../middlewares/protectManager.middleware.js";
 import { getUsers, updateUserRole } from "../controllers/user.controller.js";
 import { Role } from "../constants/role.js";
 import { deactivateUser } from "../controllers/user.controller.js";
+import { reactivateUser } from "../controllers/user.controller.js";
 
 const router = Router();
 
@@ -36,6 +37,14 @@ router.delete(
   requireRole(Role.ADMIN, Role.MANAGER),
   protectManager,
   deactivateUser
+);
+
+router.patch(
+  "/:id/reactivate",
+  authMiddleware,
+  requireRole(Role.ADMIN, Role.MANAGER),
+  protectManager,
+  reactivateUser
 );
 
 export default router;

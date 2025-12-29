@@ -69,5 +69,36 @@ export const userService = {
     });
 
     return updatedUser;
-  } 
+  },
+
+  async reactivateUser(
+    actorUserId: string,
+    targetUserId: string
+  ) {
+    const targetUser = await userRepository.findById(targetUserId);
+
+    if (!targetUser) {
+      throw new Error("User not found");
+    }
+
+    if (targetUser.active) {
+      return targetUser;
+    }
+
+    const updatedUser = await userRepository.activateById(
+      targetUserId
+    );
+
+    await auditRepository.log({
+      actorUserId,
+      targetUserId, 
+      action: "REACTIVATE_USER",
+      oldValue: "inactive",
+      newValue: "active",
+    });
+
+    return updatedUser;
+  }
+
+
 }

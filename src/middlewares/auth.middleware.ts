@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { tokenService } from "../services/token.service.js";
+import jwt from "jsonwebtoken";
 
 export const authMiddleware = (
   req: Request,

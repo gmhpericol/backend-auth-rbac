@@ -77,6 +77,13 @@ export const userRepository = {
       where: { id },
       data: { active: false },
     });
+  },
+
+  async activateById(id: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { active: true },
+    });
   }
 
 };

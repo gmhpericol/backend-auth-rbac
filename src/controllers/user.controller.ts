@@ -54,3 +54,23 @@ export async function deactivateUser(
     next(err);
   }
 }
+
+export async function reactivateUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const targetUserId = req.params.id;
+    const actorUserId = (req.user as any).userId;
+
+    const user = await userService.reactivateUser(
+      actorUserId,
+      targetUserId
+    );
+
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+}
