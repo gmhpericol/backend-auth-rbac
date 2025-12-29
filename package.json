@@ -7,9 +7,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "migrate:prod": "prisma migrate deploy",
-    "start": "npm run migrate:prod && node dist/server.js"
+    "start": "npm run migrate:prod && node dist/server.js",
+    "dev": "prisma generate && ts-node src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
@@ -35,6 +36,7 @@
     "escape-html": "^1.0.3",
     "etag": "^1.8.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
     "finalhandler": "^2.1.1",
     "forwarded": "^0.2.0",
     "fresh": "^2.0.0",
@@ -44,6 +46,7 @@
     "gopd": "^1.2.0",
     "has-symbols": "^1.1.0",
     "hasown": "^2.0.2",
+    "helmet": "^8.1.0",
     "http-errors": "^2.0.1",
     "iconv-lite": "^0.7.1",
     "inherits": "^2.0.4",
@@ -87,6 +90,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/helmet": "^0.0.48",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.3",
     "prisma": "^6.19.1",
