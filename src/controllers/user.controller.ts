@@ -24,7 +24,7 @@ export const updateUserRole = async (
     const { role } = changeUserRoleSchema.parse(req.body);
 
     const updatedUser = await userService.changeUserRole(
-      (req.user as any).id,
+      (req.user as any).userId, // din middleware auth
       req.params.id,
       role
     );
@@ -42,7 +42,7 @@ export async function deactivateUser(
 ) {
   try {
     const targetUserId = req.params.id;
-    const actorUserId = (req.user as any).id; // din middleware auth
+    const actorUserId = (req.user as any).userId ; // din middleware auth
 
     const user = await userService.deactivateUser(
       actorUserId,
