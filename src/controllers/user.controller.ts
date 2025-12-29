@@ -15,19 +15,6 @@ export const getUsers = async (
   }
 };
 
-export const deleteUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    await userService.deleteById(req.params.id);
-    res.status(204).send();
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const updateUserRole = async (
   req: Request,
   res: Response,
@@ -37,6 +24,7 @@ export const updateUserRole = async (
     const { role } = changeUserRoleSchema.parse(req.body);
 
     const updatedUser = await userService.changeUserRole(
+      (req.user as any).id,
       req.params.id,
       role
     );
@@ -46,3 +34,23 @@ export const updateUserRole = async (
     next(err);
   }
 };
+
+export async function deactivateUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const targetUserId = req.params.id;
+    const actorUserId = (req.user as any).id; // din middleware auth
+
+    const user = await userService.deactivateUser(
+      actorUserId,
+      targetUserId
+    );
+
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+}

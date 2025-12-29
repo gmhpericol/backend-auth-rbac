@@ -2,8 +2,9 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { requireRole } from "../middlewares/requireRole.middleware.js";
 import { protectManager } from "../middlewares/protectManager.middleware.js";
-import { deleteUser, getUsers, updateUserRole } from "../controllers/user.controller.js";
+import { getUsers, updateUserRole } from "../controllers/user.controller.js";
 import { Role } from "../constants/role.js";
+import { deactivateUser } from "../controllers/user.controller.js";
 
 const router = Router();
 
@@ -18,14 +19,6 @@ router.get(
   getUsers
 );
 
-router.delete(
-  "/:id",
-  authMiddleware,
-  requireRole(Role.ADMIN, Role.MANAGER),
-  protectManager,
-  deleteUser
-);
-
 router.patch(
   "/:id/role",
   authMiddleware,
@@ -37,6 +30,13 @@ router.patch(
   updateUserRole
 );
 
+router.delete(
+  "/:id",
+  authMiddleware,
+  requireRole(Role.ADMIN, Role.MANAGER),
+  protectManager,
+  deactivateUser
+);
 
 export default router;
 

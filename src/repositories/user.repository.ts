@@ -70,5 +70,13 @@ export const userRepository = {
 
     return mapUser(user);
 
+  },
+
+  async deactivateById(id: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { active: false },
+    });
   }
+
 };
