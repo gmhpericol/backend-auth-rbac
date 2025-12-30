@@ -4,7 +4,7 @@ import { subscriptionRepository } from "../../repositories/subscription.reposito
 import { planRepository } from "../../repositories/plan.repository.js"
 import { contractRepository } from "../../repositories/contract.repository.js"
 import { invoiceRepository } from "../../repositories/invoice.repository.js"
-import { addBillingCycle, generateBillingKey } from "./helpers"
+import { addBillingCycle, generateBillingKey } from "./helpers.js"
 import { Prisma } from "@prisma/client"
 
 export const subscriptionService = {
