@@ -1,9 +1,9 @@
 import { AuthUser } from "../../types/auth"
 import { CreateSubscriptionInput } from "../../types/subscription"
-import { subscriptionRepository } from "../../repositories/subscription.repository"
-import { planRepository } from "../../repositories/plan.repository"
-import { contractRepository } from "../../repositories/contract.repository"
-import { invoiceRepository } from "../../repositories/invoice.repository"
+import { subscriptionRepository } from "../../repositories/subscription.repository.js"
+import { planRepository } from "../../repositories/plan.repository.js"
+import { contractRepository } from "../../repositories/contract.repository.js"
+import { invoiceRepository } from "../../repositories/invoice.repository.js"
 import { addBillingCycle, generateBillingKey } from "./helpers"
 import { Prisma } from "@prisma/client"
 

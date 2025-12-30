@@ -1,4 +1,4 @@
-import { subscriptionService } from "../services/subscription/subscription.service"
+import { subscriptionService } from "../services/subscription/subscription.service.js";
 
 let lastRun: number | null = null
 const MIN_INTERVAL_MS = 5 * 60 * 1000 // 5 minute

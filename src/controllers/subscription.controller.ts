@@ -3,7 +3,7 @@ import { subscriptionService } from "../services/subscription/subscription.servi
 import {
   createSubscriptionSchema,
   changePlanSchema,
-} from "../validators/subscription.schema"
+} from "../validators/subscription.schema.js"
 import { AuthUser } from "../types/auth"
 
 export const subscriptionController = {

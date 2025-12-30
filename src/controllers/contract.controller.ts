@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { contractService } from "../services/contract/contract.service"
+import { contractService } from "../services/contract/contract.service.js"
 import {
   createContractSchema,
   terminateContractSchema,
-} from "../validators/contract.schema"
+} from "../validators/contract.schema.js"
 import { AuthUser } from "../types/auth"
 
 export const contractController = {
