@@ -8,10 +8,10 @@ import helmet from "helmet";
 import { authRateLimiter, generalRateLimiter } from "./middlewares/rateLimit.middleware.js";
 import cors from "cors";
 import auditRoutes from "./routes/audit.routes.js";
-import contractRoutes from "./routes/contract.routes"
-import subscriptionRoutes from "./routes/subscription.routes"
-import { billingTriggerMiddleware } from "./middlewares/billingTrigger.middleware"
-import { authMiddleware } from "./middlewares/auth.middleware"
+import contractRoutes from "./routes/contract.routes.js"
+import subscriptionRoutes from "./routes/subscription.routes.js"
+import { billingTriggerMiddleware } from "./middlewares/billingTrigger.middleware.js"
+import { authMiddleware } from "./middlewares/auth.middleware.js"
 
 const allowedOrigins = [
   "http://localhost:3000",       // dev
