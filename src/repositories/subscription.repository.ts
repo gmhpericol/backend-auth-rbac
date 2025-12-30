@@ -36,17 +36,21 @@ export const subscriptionRepository = {
     })
   },
 
-  findDueForBilling(now: Date) {
+  async findDueForBilling(now: Date) {
     return prisma.subscription.findMany({
-      where: {
+        where: {
         status: "ACTIVE",
         nextBillingAt: { lte: now },
-      },
-      include: {
+        contract: {
+            status: "ACTIVE",
+        },
+        },
+        include: {
         plan: true,
         contract: true,
-      },
+        },
     })
   },
+
 }
 

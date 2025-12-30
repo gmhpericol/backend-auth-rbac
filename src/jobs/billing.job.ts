@@ -4,7 +4,6 @@ import { prisma } from "../config/prisma.js";
 async function runBilling() {
   const now = new Date()
 
-  console.log("[BillingJob] Started at", now.toISOString())
 
   try {
     await subscriptionService.billDueSubscriptions(now)

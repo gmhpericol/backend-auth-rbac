@@ -19,4 +19,3 @@ export const tokenService = {
     return jwt.verify(token, JWT_SECRET) as JwtPayload;
   }
 };
-console.log("JWT_SECRET:", process.env.JWT_SECRET);

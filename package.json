@@ -9,7 +9,10 @@
   "scripts": {
     "build": "prisma generate && prisma migrate deploy && tsc",
     "start": "node dist/server.js",
-    "dev": "prisma generate && ts-node src/server.ts"
+    "dev": "prisma generate && ts-node src/server.ts",
+    "test": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
@@ -94,8 +97,10 @@
     "@types/helmet": "^0.0.48",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.3",
+    "@vitest/ui": "^4.0.16",
     "prisma": "^6.19.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   },
   "keywords": []
 }

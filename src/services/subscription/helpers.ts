@@ -16,3 +16,22 @@ export function generateBillingKey(
 ): string {
   return `${subscriptionId}_${periodStart.toISOString()}`
 }
+
+export function getBillingPeriodStartForNow(
+  now: Date,
+  billingCycle: BillingCycle
+): Date {
+  const date = new Date(now)
+
+  if (billingCycle === "MONTHLY") {
+    date.setUTCDate(1)
+    date.setUTCHours(0, 0, 0, 0)
+  }
+
+  if (billingCycle === "YEARLY") {
+    date.setUTCMonth(0, 1)
+    date.setUTCHours(0, 0, 0, 0)
+  }
+
+  return date
+}

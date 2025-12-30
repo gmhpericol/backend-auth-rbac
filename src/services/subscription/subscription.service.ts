@@ -4,8 +4,7 @@ import { subscriptionRepository } from "../../repositories/subscription.reposito
 import { planRepository } from "../../repositories/plan.repository.js"
 import { contractRepository } from "../../repositories/contract.repository.js"
 import { invoiceRepository } from "../../repositories/invoice.repository.js"
-import { addBillingCycle, generateBillingKey } from "./helpers.js"
-import { Prisma } from "@prisma/client"
+import { addBillingCycle, generateBillingKey, getBillingPeriodStartForNow } from "./helpers.js"
 
 export const subscriptionService = {
   async createSubscription(actor: AuthUser, input: CreateSubscriptionInput) {
@@ -108,41 +107,45 @@ export const subscriptionService = {
         })
 
   },
-
+  
   async billDueSubscriptions(now: Date) {
     const subs = await subscriptionRepository.findDueForBilling(now)
+console.log("BILLING SUBS COUNT =", subs.length)
 
     for (const sub of subs) {
-        if (sub.contract.status !== "ACTIVE") {
-            continue
-        }
-      const periodStart = sub.lastBilledAt ?? sub.startDate
-      const periodEnd = addBillingCycle(periodStart, sub.billingCycle)
-      const billingKey = generateBillingKey(sub.id, periodStart)
+        if (sub.contract.status !== "ACTIVE") continue
 
-      try {
+        const periodStart = getBillingPeriodStartForNow(
+        now,
+        sub.billingCycle
+        )
+
+        const periodEnd = addBillingCycle(periodStart, sub.billingCycle)
+        const billingKey = generateBillingKey(sub.id, periodStart)
+
+        const existingInvoice =
+        await invoiceRepository.findByBillingKey(billingKey)
+
+        if (existingInvoice) continue
+
         await invoiceRepository.create({
-          subscriptionId: sub.id,
-          periodStart,
-          periodEnd,
-          amountCents: sub.plan.priceCents,
-          currency: sub.plan.currency,
-          billingKey,
+        subscriptionId: sub.id,
+        periodStart,
+        periodEnd,
+        amountCents: sub.plan.priceCents,
+        currency: sub.plan.currency,
+        billingKey,
         })
-      } catch (e) {
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === "P2002"
-        ) {
-          continue
-        }
-        throw e
-      }
 
-      await subscriptionRepository.update(sub.id, {
+        await subscriptionRepository.update(sub.id, {
         lastBilledAt: periodEnd,
         nextBillingAt: periodEnd,
-      })
+        })
     }
-  },
+    }
+
 }
+
+
+
+

@@ -20,6 +20,11 @@ const allowedOrigins = [
 
 const app = express();
 
+if (process.env.NODE_ENV !== "test") {
+  app.use(billingTriggerMiddleware)
+}
+
+
 app.set("trust proxy", 1);
 
 app.use(
