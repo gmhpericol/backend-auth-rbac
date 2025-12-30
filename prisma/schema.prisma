@@ -13,6 +13,33 @@ enum Role {
   MANAGER
 }
 
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+  EXPIRED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELED
+  EXPIRED
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum TerminationReason {
+  CUSTOMER_REQUEST
+  NON_PAYMENT
+  BREACH
+  ADMIN_DECISION
+}
+
 model User {
   id       String  @id @default(uuid())
   email    String  @unique
@@ -23,12 +50,96 @@ model User {
 }
 
 model AuditLog {
-  id            String   @id @default(uuid())
-  actorUserId   String
-  targetUserId  String
-  action        String
-  oldValue      String?
-  newValue      String?
-  createdAt     DateTime @default(now())
+  id           String   @id @default(uuid())
+  actorUserId  String
+  targetUserId String
+  action       String
+  oldValue     String?
+  newValue     String?
+  createdAt    DateTime @default(now())
 }
 
+model Contract {
+  id         String         @id @default(uuid())
+  customerId String // owner (User sau Organization)
+  status     ContractStatus @default(DRAFT)
+
+  startDate DateTime?
+  endDate   DateTime?
+  signedAt  DateTime?
+
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  terminatedAt      DateTime?
+  terminationReason TerminationReason?
+
+  subscriptions Subscription[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([endDate])
+}
+
+model Plan {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  priceCents  Int
+  currency    String  @default("EUR")
+
+  billingCycle BillingCycle
+  features     Json
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@unique([name, billingCycle])
+  @@index([isActive])
+}
+
+model Subscription {
+  id         String @id @default(uuid())
+  contractId String
+  planId     String
+
+  status       SubscriptionStatus @default(ACTIVE)
+  billingCycle BillingCycle
+
+  startDate DateTime
+  endDate   DateTime?
+
+  nextBillingAt DateTime
+  lastBilledAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contract Contract  @relation(fields: [contractId], references: [id])
+  plan     Plan      @relation(fields: [planId], references: [id])
+  invoices Invoice[]
+
+  @@index([contractId])
+  @@index([status])
+  @@index([nextBillingAt])
+}
+
+model Invoice {
+  id             String   @id @default(uuid())
+  subscriptionId String
+  periodStart    DateTime
+  periodEnd      DateTime
+  amountCents    Int
+  currency       String
+
+  billingKey String   @unique
+  createdAt  DateTime @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+}
