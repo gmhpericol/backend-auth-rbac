@@ -2,7 +2,7 @@ import { ContractStatus, TerminationReason } from "@prisma/client"
 import { AuthUser } from "../../types/auth"
 import { CreateContractInput } from "../../types/contract"
 import { contractRepository } from "../../repositories/contract.repository.js"
-import { auditService } from "../audit.service"
+import { auditService } from "../audit.service.js"
 import { prisma } from "../../config/prisma.js"
 
 function assertManagerOrAdmin(actor: AuthUser) {
