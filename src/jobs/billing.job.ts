@@ -1,4 +1,4 @@
-import { subscriptionService } from "../services/subscription/subscription.service"
+import { subscriptionService } from "../services/subscription/subscription.service.js";
 import { prisma } from "../config/prisma.js";
 
 async function runBilling() {

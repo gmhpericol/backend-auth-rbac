@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { subscriptionService } from "../services/subscription/subscription.service"
+import { subscriptionService } from "../services/subscription/subscription.service.js"
 import {
   createSubscriptionSchema,
   changePlanSchema,
