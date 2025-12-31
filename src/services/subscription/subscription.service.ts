@@ -13,9 +13,11 @@ export const subscriptionService = {
     }
 
     const contract = await contractRepository.findById(input.contractId)
+    
     if (!contract) throw new Error("Contract not found")
-    if (contract.status !== "ACTIVE") {
-      throw new Error("Contract not active")
+    
+    if (!["DRAFT", "ACTIVE"].includes(contract.status)) {
+      throw new Error("Invalid contract status")
     }
 
     const plan = await planRepository.findActiveById(input.planId)
@@ -110,7 +112,6 @@ export const subscriptionService = {
   
   async billDueSubscriptions(now: Date) {
     const subs = await subscriptionRepository.findDueForBilling(now)
-console.log("BILLING SUBS COUNT =", subs.length)
 
     for (const sub of subs) {
         if (sub.contract.status !== "ACTIVE") continue
