@@ -48,12 +48,12 @@ app.use(express.json());
 app.use(helmet());
 app.disable("x-powered-by");
 
-app.use(authMiddleware)
 app.use(billingTriggerMiddleware)
 
 app.use(generalRateLimiter);
 
 app.use("/auth", authRateLimiter, authRoutes);
+app.use(authMiddleware)
 app.use("/health", healthRoutes);
 app.use("/users", userRoutes);
 app.use("/audit", auditRoutes);
