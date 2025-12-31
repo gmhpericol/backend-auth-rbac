@@ -336,3 +336,21 @@ Fluxuri validate:
 ✔ Subscription Management
 ✔ Initial Billing Logic
 ✔ Production deploy
+
+---
+
+## 🧪 Manual API Testing (Postman)
+
+Backend-ul este testat manual end-to-end folosind o colecție Postman dedicată.
+
+Colecția acoperă:
+- Auth & JWT handling
+- Role-Based Access Control (RBAC)
+- User lifecycle (deactivate / reactivate)
+- Contract lifecycle
+- Subscription management
+- Billing & invoice idempotency
+
+📁 Documentația completă și colecția se află în:
+/postman
+

@@ -1,0 +1,490 @@
+{
+	"info": {
+		"_postman_id": "6c577489-88a5-47ee-b3e8-809cc1b42932",
+		"name": "backend-auth-rbac.onrender.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3902170",
+		"_collection_link": "https://universal-space-132949.postman.co/workspace/Adrian-B~248350b6-53bc-420b-bff8-1014295e1056/collection/3902170-6c577489-88a5-47ee-b3e8-809cc1b42932?action=share&source=collection_link&creator=3902170"
+	},
+	"item": [
+		{
+			"name": "manager login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const json = pm.response.json();\r",
+							"\r",
+							"if (json.token) {\r",
+							"  pm.environment.set(\"TOKEN\", json.token);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{EMAIL}}\",\r\n  \"password\": \"{{PASSWORD}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://backend-auth-rbac.onrender.com/auth/login",
+					"protocol": "https",
+					"host": [
+						"backend-auth-rbac",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}health",
+					"host": [
+						"{{BASE_URL}}health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth/login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"gmhpericol@gmail.com\",\r\n  \"password\": \"br3b4nAdYb280\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}auth/login",
+					"host": [
+						"{{BASE_URL}}auth"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"user3@example.com\",\r\n  \"name\": \"user3 User\",\r\n  \"password\": \"parola123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}auth/register",
+					"host": [
+						"{{BASE_URL}}auth"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/id/role",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role\":\"USER\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}users/:id/role",
+					"host": [
+						"{{BASE_URL}}users"
+					],
+					"path": [
+						":id",
+						"role"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "b61d45ed-a25e-43da-99c1-8e585ea234d8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "audit",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}audit",
+					"host": [
+						"{{BASE_URL}}audit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteid",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}users/:id",
+					"host": [
+						"{{BASE_URL}}users"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "b61d45ed-a25e-43da-99c1-8e585ea234d8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/id/role",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role\":\"USER\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}users/:id/role",
+					"host": [
+						"{{BASE_URL}}users"
+					],
+					"path": [
+						":id",
+						"role"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "efddfe62-af06-4e4c-9201-5560dab6abcf"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contracts",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerId\": \"efddfe62-af06-4e4c-9201-5560dab6abcf\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}contracts",
+					"host": [
+						"{{BASE_URL}}contracts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contracts/id/activate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}contracts/:id/activate",
+					"host": [
+						"{{BASE_URL}}contracts"
+					],
+					"path": [
+						":id",
+						"activate"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "8556e7eb-b3d9-44ad-a367-a830bc51d636"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/id/reactivate",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}users/:id/reactivate",
+					"host": [
+						"{{BASE_URL}}users"
+					],
+					"path": [
+						":id",
+						"reactivate"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "b61d45ed-a25e-43da-99c1-8e585ea234d8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subscriptions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contractId\": \"8556e7eb-b3d9-44ad-a367-a830bc51d636\",\r\n  \"planId\": \"fda0f98c-62f0-4d4e-9a7d-fa550c62bdef\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}subscriptions",
+					"host": [
+						"{{BASE_URL}}subscriptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plans",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Basic 2\",\r\n  \"priceCents\": 2000,\r\n  \"currency\": \"EUR\",\r\n  \"billingCycle\": \"MONTHLY\",\r\n  \"features\": {\r\n    \"users\": 10\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}plans",
+					"host": [
+						"{{BASE_URL}}plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subscriptions/id/pause",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{BASE_URL}}subscriptions/:subscriptionId/pause",
+					"host": [
+						"{{BASE_URL}}subscriptions"
+					],
+					"path": [
+						":subscriptionId",
+						"pause"
+					],
+					"variable": [
+						{
+							"key": "subscriptionId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"const accessToken = pm.collectionVariables.get(\"accessToken\");\r",
+					"const expiresAt = pm.collectionVariables.get(\"expiresAt\");\r",
+					"\r",
+					"const now = Date.now();\r",
+					"\r",
+					"// dacă nu există token sau e expirat\r",
+					"if (!accessToken || !expiresAt || now >= expiresAt) {\r",
+					"    pm.sendRequest({\r",
+					"        url: pm.environment.get(\"baseUrl\") + \"/auth/login\",\r",
+					"        method: \"POST\",\r",
+					"        header: {\r",
+					"            \"Content-Type\": \"application/json\"\r",
+					"        },\r",
+					"        body: {\r",
+					"            mode: \"raw\",\r",
+					"            raw: JSON.stringify({\r",
+					"                email: pm.environment.get(\"email\"),\r",
+					"                password: pm.environment.get(\"password\")\r",
+					"            })\r",
+					"        }\r",
+					"    }, function (err, res) {\r",
+					"        if (err) {\r",
+					"            console.error(\"Auth error\", err);\r",
+					"            return;\r",
+					"        }\r",
+					"\r",
+					"        const json = res.json();\r",
+					"        pm.collectionVariables.set(\"accessToken\", json.access_token);\r",
+					"        pm.collectionVariables.set(\"expiresAt\", Date.now() + json.expires_in * 1000);\r",
+					"    });\r",
+					"}\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": ""
+		},
+		{
+			"key": "TOKEN",
+			"value": ""
+		}
+	]
+}
