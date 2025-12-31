@@ -12,6 +12,7 @@ import contractRoutes from "./routes/contract.routes.js"
 import subscriptionRoutes from "./routes/subscription.routes.js"
 import { billingTriggerMiddleware } from "./middlewares/billingTrigger.middleware.js"
 import { authMiddleware } from "./middlewares/auth.middleware.js"
+import planRoutes from "./routes/plan.routes.js";
 
 const allowedOrigins = [
   "http://localhost:3000",       // dev
@@ -57,6 +58,7 @@ app.use(authMiddleware)
 app.use("/health", healthRoutes);
 app.use("/users", userRoutes);
 app.use("/audit", auditRoutes);
+app.use("/plans", planRoutes);
 
 app.use("/contracts", contractRoutes)
 app.use("/subscriptions", subscriptionRoutes)

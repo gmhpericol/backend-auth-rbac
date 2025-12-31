@@ -314,6 +314,18 @@ middleware pentru normalizare auth
 
 DB provider agnostic (ușor de mutat între provideri)
 
+🧪 Manual API Testing
+
+API-ul a fost testat manual în production folosind o colecție Postman.
+
+Fluxuri validate:
+- Auth & JWT issuance
+- RBAC enforcement
+- User lifecycle (deactivate / reactivate)
+- Contract configuration & activation
+- Subscription creation & lifecycle
+- Billing idempotency (invoices per period)
+
 🎯 Status
 
 ✔ Auth
