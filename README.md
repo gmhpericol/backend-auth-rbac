@@ -1,6 +1,20 @@
-**Backend API – User Management & RBAC
-**
-Backend REST API scris în TypeScript, construit pe Express + Prisma, cu autentificare JWT, Role-Based Access Control (RBAC) și audit logging pentru acțiuni sensibile.
+Backend API – User, Contract & Subscription Management
+
+Backend REST API scris în TypeScript, construit pe Express + Prisma, care oferă:
+
+autentificare JWT
+
+Role-Based Access Control (RBAC)
+
+management de utilizatori (soft delete)
+
+management de contracte și subscripții
+
+logică inițială de billing
+
+audit logging pentru acțiuni sensibile
+
+Proiectul este orientat spre design de domeniu, separare clară a responsabilităților și bune practici de securitate.
 
 🔧 Tech Stack
 
@@ -16,7 +30,9 @@ JWT Authentication
 
 Zod – validare input
 
-Helmet + Rate Limit – hardening securitate
+Helmet + Rate Limiting – hardening securitate
+
+Vitest – testare service-level
 
 🧱 Arhitectură
 
@@ -27,7 +43,7 @@ Aplicația urmează o arhitectură stratificată, cu responsabilități clare:
 └──────┬──────┘
        ↓
 ┌─────────────┐
-│   Service   │  ← Business Logic + Audit
+│   Service   │  ← Business Logic + RBAC + Audit
 └──────┬──────┘
        ↓
 ┌─────────────┐
@@ -38,53 +54,62 @@ Aplicația urmează o arhitectură stratificată, cu responsabilități clare:
 │ PostgreSQL  │
 └─────────────┘
 
-Separare de responsabilități
+Principii
 
-Controller: HTTP, parsing request, Zod validation
+separare clară a responsabilităților
 
-Service: reguli de business, RBAC, audit
+fără logică de business în controllers
 
-Repository: acces DB, fără logică
+repository layer fără reguli de business
 
-Middleware: auth, roluri, protecții
+service layer ca sursă unică de adevăr
 
-🔐 Autentificare & Securitate
+👤 Users vs Customers
 
-JWT-based authentication
+User reprezintă un actor autenticat în sistem (ADMIN / MANAGER / USER).
 
-Token conține:
+Customer reprezintă entitatea care deține Contracte și Subscriptions.
+
+În versiunea curentă:
+
+customerId este un identificator generic (string)
+
+poate reprezenta un User sau o entitate externă
+
+designul permite extindere ulterioară către Organization / Company
+
+Lifecycle-ul Userului este independent de lifecycle-ul Contractelor și Subscriptions.
+
+🔐 Autentificare & RBAC
+JWT Authentication
+
+JWT conține:
 
 userId
 
 role
 
-Token verificat în middleware
+Tokenul este verificat în middleware
 
-req.user normalizat intern
+req.user este normalizat intern
 
 Roluri
 
-USER
+USER – acces limitat
 
-ADMIN
+ADMIN – poate gestiona USER și ADMIN
 
-MANAGER
+MANAGER – rol suprem
 
 Reguli RBAC
 
-MANAGER → rol suprem
+MANAGER poate administra toate rolurile
 
-ADMIN:
+ADMIN nu poate modifica MANAGER
 
-poate gestiona USER / ADMIN
+USER are acces strict limitat
 
-nu poate modifica MANAGER
-
-USER:
-
-acces limitat
-
-🔄 Lifecycle User (Soft Delete)
+🔄 User Lifecycle (Soft Delete)
 
 Nu se folosește delete fizic prin API.
 
@@ -92,7 +117,7 @@ Stări
 
 active = true → user activ
 
-active = false → user dezactivat (soft delete)
+active = false → user dezactivat
 
 Operații
 
@@ -102,11 +127,81 @@ Reactivate user (PATCH /users/:id/reactivate)
 
 Ambele:
 
-sunt auditate
-
 sunt idempotente
 
+sunt auditate
+
 respectă RBAC
+
+Dezactivarea unui user nu afectează contractele sau billingul.
+
+📄 Contract Management
+
+Contractul reprezintă un acord între sistem și un customer.
+
+Stări contract
+
+DRAFT
+
+ACTIVE
+
+SUSPENDED
+
+TERMINATED
+
+EXPIRED
+
+Reguli
+
+doar contractele ACTIVE pot avea subscriptions active
+
+contractele au lifecycle propriu, independent de user
+
+🔁 Subscription Management
+
+Subscription definește relația activă dintre un Contract și un Plan.
+
+Stări subscription
+
+ACTIVE
+
+PAUSED
+
+CANCELED
+
+EXPIRED
+
+Funcționalități
+
+creare subscription
+
+pauză / reluare
+
+schimbare plan
+
+urmărire billing cycle
+
+calcul nextBillingAt și lastBilledAt
+
+💳 Billing (Initial Logic)
+
+Sistemul implementează o primă versiune de billing automat:
+
+billing per subscription
+
+billing pe cycle (MONTHLY / YEARLY)
+
+generare de invoice per perioadă
+
+protecție împotriva dublării prin billingKey
+
+Billingul este:
+
+determinist
+
+idempotent la nivel de perioadă
+
+separat de autentificare și RBAC
 
 🧾 Audit Log
 
@@ -138,23 +233,38 @@ Auditul este:
 
 append-only
 
-scris din service layer
+scris exclusiv din service layer
 
 accesibil doar MANAGER
 
 📡 Endpoints principale
 Auth
+
 POST /auth/register
+
 POST /auth/login
 
 Users
-GET    /users
-PATCH  /users/:id/role
+
+GET /users
+
+PATCH /users/:id/role
+
 DELETE /users/:id
-PATCH  /users/:id/reactivate
+
+PATCH /users/:id/reactivate
+
+Contracts & Subscriptions
+
+CRUD contracte
+
+creare și administrare subscriptions
+
+schimbare plan
 
 Audit
-GET /audit   (MANAGER only)
+
+GET /audit (MANAGER only)
 
 🛡️ Hardening Securitate
 
@@ -166,7 +276,7 @@ Centralized error handling
 
 Zod validation
 
-Fără expunere detalii interne
+Fără expunere de detalii interne
 
 🗄️ Database & Migrations
 
@@ -174,11 +284,12 @@ PostgreSQL (Neon)
 
 Prisma schema ca sursă de adevăr
 
-Migrations versionate în Git
+migrations versionate în Git
 
-Deploy automat:
+deploy automat:
 
 prisma generate
+
 prisma migrate deploy
 
 ▶️ Rulare locală
@@ -191,15 +302,17 @@ npm start
 
 🧠 Decizii de design
 
-Soft delete în loc de delete fizic
+soft delete pentru User
 
-Audit pentru acțiuni critice
+lifecycle separat pentru User / Contract / Subscription
 
-Service layer conține business logic
+audit pentru acțiuni critice
 
-Middleware normalizează JWT payload
+business logic concentrat în service layer
 
-Provider DB agnostic (Supabase → Neon fără schimbări de cod)
+middleware pentru normalizare auth
+
+DB provider agnostic (ușor de mutat între provideri)
 
 🎯 Status
 
@@ -207,4 +320,7 @@ Provider DB agnostic (Supabase → Neon fără schimbări de cod)
 ✔ RBAC
 ✔ Audit
 ✔ Soft delete + Reactivate
+✔ Contract Management
+✔ Subscription Management
+✔ Initial Billing Logic
 ✔ Production deploy
