@@ -17,7 +17,8 @@ import planRoutes from "./routes/plan.routes.js";
 const allowedOrigins = [
   "http://localhost:3000",       // vechi (poate fi scos)
   "http://localhost:5173",       // UI-ul tău actual (Vite)
-  "https://my-frontend.vercel.app"
+  "https://my-frontend.vercel.app",
+  "https://backend-demo-ui.onrender.com",
 ];
 
 
