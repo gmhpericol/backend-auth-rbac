@@ -52,5 +52,12 @@ export const subscriptionRepository = {
     })
   },
 
+  async findAll() {
+    return prisma.subscription.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+
 }
 

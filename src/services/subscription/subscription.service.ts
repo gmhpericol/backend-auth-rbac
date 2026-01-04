@@ -5,6 +5,7 @@ import { planRepository } from "../../repositories/plan.repository.js"
 import { contractRepository } from "../../repositories/contract.repository.js"
 import { invoiceRepository } from "../../repositories/invoice.repository.js"
 import { addBillingCycle, generateBillingKey, getBillingPeriodStartForNow } from "./helpers.js"
+import { JwtPayload } from "../token.service"
 
 export const subscriptionService = {
   async createSubscription(actor: AuthUser, input: CreateSubscriptionInput) {
@@ -109,7 +110,11 @@ export const subscriptionService = {
         })
 
   },
-  
+  async list(user: AuthUser | JwtPayload) {
+    // Additional filtering based on user role can be added here
+    return subscriptionRepository.findAll();
+  },
+
   async billDueSubscriptions(now: Date) {
     const subs = await subscriptionRepository.findDueForBilling(now)
 

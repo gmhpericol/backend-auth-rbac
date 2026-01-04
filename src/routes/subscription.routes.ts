@@ -4,6 +4,8 @@ import { authMiddleware } from "../middlewares/auth.middleware.js"
 
 const router = Router()
 
+router.get("/", authMiddleware, subscriptionController.list);
+
 router.post("/", authMiddleware, subscriptionController.create)
 router.post("/:id/pause", authMiddleware, subscriptionController.pause)
 router.post("/:id/resume", authMiddleware, subscriptionController.resume)
