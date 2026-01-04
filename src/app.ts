@@ -15,9 +15,11 @@ import { authMiddleware } from "./middlewares/auth.middleware.js"
 import planRoutes from "./routes/plan.routes.js";
 
 const allowedOrigins = [
-  "http://localhost:3000",       // dev
-  "https://my-frontend.vercel.app" // prod - it is an example, change it to your real frontend URL
+  "http://localhost:3000",       // vechi (poate fi scos)
+  "http://localhost:5173",       // UI-ul tău actual (Vite)
+  "https://my-frontend.vercel.app"
 ];
+
 
 const app = express();
 
@@ -43,6 +45,7 @@ app.use(
     credentials: true,
   })
 );
+app.options("*", cors());
 
 app.use(express.json());
 
