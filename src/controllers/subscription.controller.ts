@@ -43,4 +43,14 @@ export const subscriptionController = {
 
     res.status(204).send()
   },
+
+  list: async (req: Request, res: Response, next: (arg0: unknown) => void) => {
+  try {
+    const subscriptions = await subscriptionService.list(req.user as AuthUser);
+    res.json(subscriptions);
+  } catch (err) {
+    next(err);
+  }
+},
+
 }
