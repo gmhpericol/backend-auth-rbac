@@ -40,12 +40,11 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
-app.options("/*", cors());
 
 app.use(express.json());
 
