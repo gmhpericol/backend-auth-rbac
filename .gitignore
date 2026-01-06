@@ -2,5 +2,5 @@ node_modules/
 dist/
 .env
 .env.test
-
+test/
 /src/generated/prisma
