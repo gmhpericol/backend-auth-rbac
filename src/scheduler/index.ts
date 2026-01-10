@@ -2,7 +2,7 @@ import { PrismaJobRepository } from "./infrastructure/repositories/PrismaJobRepo
 import { JobService } from "./application/services/JobService.js";
 import { JobExecutor } from "./worker/JobExecutor.js";
 import { Worker } from "./worker/Worker.js";
-import { ResendEmailService } from "../services/email/ResendEmailService";
+import { ResendEmailService } from "../services/email/ResendEmailService.js";
 
 // Infrastructure
 const jobRepository = new PrismaJobRepository();
