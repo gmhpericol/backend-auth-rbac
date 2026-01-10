@@ -2,15 +2,20 @@ import { PrismaJobRepository } from "./infrastructure/repositories/PrismaJobRepo
 import { JobService } from "./application/services/JobService.js";
 import { JobExecutor } from "./worker/JobExecutor.js";
 import { Worker } from "./worker/Worker.js";
-import { NodemailerEmailService } from "../services/email/NodemailerEmailService.js";
+import { ResendEmailService } from "../services/email/ResendEmailService";
 
+// Infrastructure
 const jobRepository = new PrismaJobRepository();
-export const jobService = new JobService(jobRepository);
-const emailService = new NodemailerEmailService();
+const emailService = new ResendEmailService();
 
+// Application
+export const jobService = new JobService(jobRepository);
+
+// Worker
 const executor = new JobExecutor(emailService);
 const worker = new Worker(jobService, executor);
 
+// Public API
 export function startScheduler(): void {
   worker.start();
 }
