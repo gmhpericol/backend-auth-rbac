@@ -16,8 +16,13 @@ export const authService = {
     await jobService.createJob({
       jobKey: `send-welcome-email-to-${user.id}`,
       type: "SEND_WELCOME_EMAIL",
-      payload: { userId: user.id, email: user.email, name: user.name },
-      maxAttempts: 5,
+      payload: { 
+        to: user.email, 
+        name: user.name ,
+        subject: "Welcome!",
+        html: `<h1>Welcome ${user.name}!<h1>`,
+      },
+      maxAttempts: 3,
     });
 
     return user;
