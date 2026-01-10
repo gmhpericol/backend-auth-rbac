@@ -1,7 +1,7 @@
 
 import app from "./app.js";
 import { exec } from "child_process";
-import { startScheduler } from "./scheduler";
+import { startScheduler } from "./scheduler/index.js";
 
 startScheduler();
 
