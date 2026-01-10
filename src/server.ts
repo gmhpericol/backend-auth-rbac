@@ -1,6 +1,9 @@
 
 import app from "./app.js";
 import { exec } from "child_process";
+import { startScheduler } from "./scheduler";
+
+startScheduler();
 
 if (process.env.NODE_ENV === "production") {
   exec("npx prisma migrate deploy", (error, stdout, stderr) => {

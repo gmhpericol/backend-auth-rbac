@@ -40,6 +40,20 @@ enum TerminationReason {
   ADMIN_DECISION
 }
 
+enum JobStatus {
+  PENDING
+  RUNNING
+  FAILED
+  COMPLETED
+  DEAD
+}
+
+enum ExecutionStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id       String  @id @default(uuid())
   email    String  @unique
@@ -142,4 +156,37 @@ model Invoice {
   subscription Subscription @relation(fields: [subscriptionId], references: [id])
 
   @@index([subscriptionId])
+}
+
+model Job {
+  id           String     @id @default(uuid())
+  jobKey       String     @unique
+  type         String
+  payload      Json
+
+  status       JobStatus
+  attempt      Int
+  maxAttempts  Int
+  nextRunAt    DateTime
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  executions   JobExecution[]
+
+  @@index([status, nextRunAt])
+}
+
+model JobExecution {
+  id          String           @id @default(uuid())
+  jobId       String
+  job         Job              @relation(fields: [jobId], references: [id])
+
+  attempt     Int
+  status      ExecutionStatus
+  startedAt   DateTime
+  finishedAt  DateTime?
+  error       String?
+
+  @@unique([jobId, attempt])
 }
