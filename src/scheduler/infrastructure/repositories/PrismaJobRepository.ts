@@ -1,5 +1,5 @@
 import { prisma } from "../../../config/prisma.js";
-import { JobRepository } from "./JobRepository";
+import { JobRepository } from "../../infrastructure/repositories/JobRepository.js";
 import { Job } from "../../domain/job/Job";
 import { JobExecution } from "../../domain/job/JobExecution";
 import { Prisma } from "@prisma/client";
