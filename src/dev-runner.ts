@@ -9,11 +9,17 @@ async function main() {
   console.log("Creating test job...");
 
   await jobService.createJob({
-    jobKey: "dev:test-job-2",
+    jobKey: "dev:test-job-4",
     type: "SEND_EMAIL",
     payload: { to: "gmhpericol@gmail.com" },
     maxAttempts: 3,
   });
+
+//     jobKey: "dev:test-job-3",
+//     type: "SEND_EMAIL",
+//     payload: { to: "gmhpericol@gmail.com" },
+//     maxAttempts: 3,
+//   });
 
   console.log("Job created.");
 }

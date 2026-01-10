@@ -31,7 +31,7 @@ export class JobService {
     });
 
     // 3️⃣ Persist
-    await this.jobRepository.save(job);
+    await this.jobRepository.create(job);
 
     return job;
   }

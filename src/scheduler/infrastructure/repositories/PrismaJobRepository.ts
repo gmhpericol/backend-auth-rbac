@@ -1,51 +1,38 @@
-import { prisma } from "../../../config/prisma.js";
-import { JobRepository } from "../../infrastructure/repositories/JobRepository.js";
+import { JobRepository } from "./JobRepository.js";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Job } from "../../domain/job/Job.js";
-import { JobExecution } from "../../domain/job/JobExecution.js";
-import { Prisma } from "@prisma/client";
+import { JobStatus } from "../../domain/job/JobStatus.js";
+import { ExecutionStatus } from "../../domain/job/ExecutionStatus.js";
+
+const prisma = new PrismaClient();
 
 export class PrismaJobRepository implements JobRepository {
-  async findById(id: string): Promise<Job | null> {
-    const record = await prisma.job.findUnique({
-      where: { id },
-      include: { executions: true },
+
+  async create(job: Job): Promise<void> {
+    await prisma.job.create({
+      data: {
+        id: job.id,
+        jobKey: job.jobKey,
+        type: job.getType(),
+        payload: job.getPayload() as Prisma.JsonObject,
+        status: JobStatus.PENDING,
+        attempt: 0,
+        maxAttempts: job.getMaxAttempts(),
+        nextRunAt: job.getNextRunAt(),
+      },
     });
-
-    return record ? this.toDomain(record) : null;
-  }
-
-  async findByJobKey(jobKey: string): Promise<Job | null> {
-    const record = await prisma.job.findUnique({
-      where: { jobKey },
-      include: { executions: true },
-    });
-
-    return record ? this.toDomain(record) : null;
   }
 
   async save(job: Job): Promise<void> {
     await prisma.$transaction(async (tx) => {
-      await tx.job.upsert({
-      where: { jobKey: job.getJobKey() }, 
-      update: {
-        status: job.getStatus(),
-        attempt: job.getAttempt(),
-        nextRunAt: job.getNextRunAt(),
-      },
-      create: {
-        id: job.id,
-        jobKey: job.getJobKey(),
-        type: job.getType(),
-        payload: job.getPayload() as Prisma.InputJsonValue,
-        status: job.getStatus(),
-        attempt: job.getAttempt(),
-        maxAttempts: job.getMaxAttempts(),
-        nextRunAt: job.getNextRunAt(),
-        createdAt: job.getCreatedAt(),
-      },
-    });
-
-
+      await tx.job.update({
+        where: { id: job.id },
+        data: {
+          status: job.getStatus(),
+          attempt: job.getAttempt(),
+          nextRunAt: job.getNextRunAt(),
+        },
+      });
 
       for (const exec of job.getExecutions()) {
         await tx.jobExecution.upsert({
@@ -74,7 +61,36 @@ export class PrismaJobRepository implements JobRepository {
     });
   }
 
-  private toDomain(record: any): Job {
+  async findById(id: string): Promise<Job | null> {
+    const record = await prisma.job.findUnique({
+      where: { id },
+      include: { executions: true },
+    });
+    return record ? this.mapToDomain(record) : null;
+  }
+
+  async findByJobKey(jobKey: string): Promise<Job | null> {
+    const record = await prisma.job.findUnique({
+      where: { jobKey },
+      include: { executions: true },
+    });
+    return record ? this.mapToDomain(record) : null;
+  }
+
+  async findNextRunnable(now: Date): Promise<Job | null> {
+    const record = await prisma.job.findFirst({
+      where: {
+        status: JobStatus.PENDING,
+        nextRunAt: { lte: now },
+      },
+      orderBy: { nextRunAt: "asc" },
+      include: { executions: true },
+    });
+
+    return record ? this.mapToDomain(record) : null;
+  }
+
+  private mapToDomain(record: any): Job {
     const job = new Job({
       id: record.id,
       jobKey: record.jobKey,
@@ -84,37 +100,20 @@ export class PrismaJobRepository implements JobRepository {
       nextRunAt: record.nextRunAt,
     });
 
-    // Rehidratare controlată (intern repository)
     (job as any).status = record.status;
     (job as any).attempt = record.attempt;
 
     for (const exec of record.executions) {
-      const execution: JobExecution = {
+      (job as any).executions.push({
         id: exec.id,
         attempt: exec.attempt,
-        status: exec.status,
+        status: exec.status as ExecutionStatus,
         startedAt: exec.startedAt,
         finishedAt: exec.finishedAt ?? undefined,
         error: exec.error ?? undefined,
-      };
-
-      (job as any).executions.push(execution);
+      });
     }
 
     return job;
-  };
-  
-  async findNextRunnable(now: Date): Promise<Job | null> {
-  const record = await prisma.job.findFirst({
-    where: {
-      status: "PENDING",
-      nextRunAt: { lte: now },
-    },
-    orderBy: { nextRunAt: "asc" },
-    include: { executions: true },
-  });
-
-  return record ? this.toDomain(record) : null;
-}
-
+  }
 }

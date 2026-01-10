@@ -4,3 +4,5 @@ dist/
 .env.test
 test/
 /src/generated/prisma
+/src/dev-email-test.ts
+/src/dev-runner.ts
