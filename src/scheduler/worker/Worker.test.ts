@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { Worker } from "./Worker";
+import { Worker } from "./Worker.js";
 
 describe("Worker", () => {
   it("executes and completes a job", async () => {

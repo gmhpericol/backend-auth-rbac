@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { JobService } from "./JobService";
-import { Job } from "../../domain/job/Job";
+import { JobService } from "./JobService.js";
+import { Job } from "../../domain/job/Job.js";
 
 function mockRepo() {
   return {

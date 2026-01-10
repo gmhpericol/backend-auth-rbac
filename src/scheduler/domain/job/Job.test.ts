@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Job } from "./Job";
-import { JobStatus } from "./JobStatus";
+import { Job } from "./Job.js";
+import { JobStatus } from "./JobStatus.js";
 
 function createJob(overrides: Partial<any> = {}) {
   return new Job({

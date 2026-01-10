@@ -1,5 +1,5 @@
-import { JobService } from "../application/services/JobService";
-import { JobExecutor } from "./JobExecutor";
+import { JobService } from "../application/services/JobService.js";
+import { JobExecutor } from "./JobExecutor.js";
 
 export class Worker {
   private isRunning = false;

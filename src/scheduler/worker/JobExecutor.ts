@@ -1,30 +1,28 @@
-import { Job } from "../domain/job/Job";
+import { EmailService } from "../../services/email/EmailService.js";
+import { Job } from "../domain/job/Job.js";
 
 export class JobExecutor {
+  constructor(private readonly emailService: EmailService) {}
+
   async execute(job: Job): Promise<void> {
     switch (job.getType()) {
-      case "SEND_EMAIL":
-        console.log(
-          `[EXECUTOR] Sending email for job ${job.id}`,
-          job.payload 
-        );
-        await this.fakeWork(500);
-        return;
+      case "SEND_EMAIL": {
+        const payload = job.getPayload() as {
+          to: string;
+          name?: string;
+        };
 
-      case "GENERATE_REPORT":
-        await this.fakeWork(1_000);
-        return;
+        await this.emailService.sendEmail({
+          to: payload.to,
+          subject: "Welcome to Learning Project",
+          html: `<h1>Welcome ${payload.name ?? ""}</h1>`,
+        });
 
-      case "SYNC_EXTERNAL_DATA":
-        await this.fakeWork(800);
-        throw new Error("External API failed");
+        return;
+      }
 
       default:
         throw new Error(`Unknown job type: ${job.getType()}`);
     }
-  }
-
-  private async fakeWork(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

@@ -1,7 +1,7 @@
 import { prisma } from "../../../config/prisma.js";
 import { JobRepository } from "../../infrastructure/repositories/JobRepository.js";
-import { Job } from "../../domain/job/Job";
-import { JobExecution } from "../../domain/job/JobExecution";
+import { Job } from "../../domain/job/Job.js";
+import { JobExecution } from "../../domain/job/JobExecution.js";
 import { Prisma } from "@prisma/client";
 
 export class PrismaJobRepository implements JobRepository {

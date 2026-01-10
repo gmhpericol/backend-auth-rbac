@@ -1,4 +1,4 @@
-import { ExecutionStatus } from "./ExecutionStatus";
+import { ExecutionStatus } from "./ExecutionStatus.js";
 
 export interface JobExecution {
   id: string;

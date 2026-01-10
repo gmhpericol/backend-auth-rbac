@@ -1,7 +1,7 @@
-import { JobStatus } from "./JobStatus";
-import { ExecutionStatus } from "./ExecutionStatus";
-import { JobExecution } from "./JobExecution";
-import { DomainError } from "./DomainError";
+import { JobStatus } from "./JobStatus.js";
+import { ExecutionStatus } from "./ExecutionStatus.js";
+import { JobExecution } from "./JobExecution.js";
+import { DomainError } from "./DomainError.js";
 
 interface JobProps {
   id: string;
@@ -94,7 +94,7 @@ export class Job {
   getPayload(): unknown {
     return this.payload;
   }
-  
+
   getJobKey(): string {
     return this.jobKey;
   }

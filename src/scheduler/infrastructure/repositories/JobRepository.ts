@@ -1,4 +1,4 @@
-import { Job } from "../../domain/job/Job";
+import { Job } from "../../domain/job/Job.js";
 
 export interface JobRepository {
   findNextRunnable(now: Date): unknown;

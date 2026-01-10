@@ -1,7 +1,7 @@
-import { JobRepository } from "../JobRepository";
-import { Job } from "../../domain/job/Job";
+import { JobRepository } from "../JobRepository.js";
+import { Job } from "../../domain/job/Job.js";
 import { randomUUID } from "crypto";
-import { exponentialBackoff } from "../policies/BackoffPolicy";
+import { exponentialBackoff } from "../policies/BackoffPolicy.js";
 
 interface CreateJobInput {
   jobKey: string;

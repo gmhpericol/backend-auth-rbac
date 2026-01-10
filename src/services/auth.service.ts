@@ -1,4 +1,5 @@
 import { userRepository } from "../repositories/user.repository.js";
+import { jobService } from "../scheduler/index.js";
 import { passwordService } from "./password.service.js";
 import { tokenService } from "./token.service.js";
 
@@ -11,6 +12,13 @@ export const authService = {
       name,
       passwordHash
     );
+
+    await jobService.createJob({
+      jobKey: `send-welcome-email-to-${user.id}`,
+      type: "SEND_WELCOME_EMAIL",
+      payload: { userId: user.id, email: user.email, name: user.name },
+      maxAttempts: 5,
+    });
 
     return user;
   },
