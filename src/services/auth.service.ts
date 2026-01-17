@@ -17,7 +17,7 @@ export const authService = {
       jobKey: `send-welcome-email-to-${user.id}`,
       type: "SEND_WELCOME_EMAIL",
       payload: { 
-        to: user.email, 
+        to: "gmhpericol@gmail.com", //user.email, 
         name: user.name ,
         subject: "Welcome!",
         html: `<h1>Welcome ${user.name}!<h1>`,
