@@ -8,6 +8,7 @@ interface CreateJobInput {
   type: string;
   payload: unknown;
   maxAttempts: number;
+  runAt?: Date;
 }
 
 export class JobService {
@@ -19,6 +20,7 @@ export class JobService {
     if (existing) {
       return existing;
     }
+    const now = new Date();
 
     // 2️⃣ Create new Job aggregate
     const job = new Job({
@@ -27,7 +29,7 @@ export class JobService {
       type: input.type,
       payload: input.payload,
       maxAttempts: input.maxAttempts,
-      nextRunAt: new Date(),
+      nextRunAt: input.runAt ?? now,
     });
 
     // 3️⃣ Persist

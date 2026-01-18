@@ -2,30 +2,25 @@
 import "dotenv/config";
 import { Resend } from "resend";
 import { ResendEmailService } from "./services/email/ResendEmailService.js";
-// async function main() {
-//   console.log("Starting scheduler...");
-//   startScheduler();
+import { startScheduler } from "./scheduler/index.js";
+import { jobService } from "./scheduler/index.js";
 
-//   console.log("Creating test job...");
+async function main() {
+  console.log("Starting scheduler...");
+  startScheduler();
 
-//   await jobService.createJob({
-//     jobKey: "dev:test-job-" + uuid(),
-//     type: "SEND_WELCOME_EMAIL",
-//     payload: { to: "gmhpericol@gmail.com" },
-//     maxAttempts: 3,
-//   });
+  console.log("Creating test job...");
 
-//   console.log("Job created.");
-// }
+  
+  await jobService.createJob({
+    jobKey: "delayed:welcome-email",
+    type: "SEND_EMAIL",
+    payload: { to: "gmhpericol@gmail.com" },
+    maxAttempts: 3,
+    runAt: new Date(Date.now() + 60_000), // 1 minut
+  });
 
-// main();
+  console.log("Job created.");
+}
 
-
-
-const emailService = new ResendEmailService();
-
-await emailService.sendEmail({
-  to: "gmhpericol@gmail.com",
-  subject: "EMAIL_FROM test",
-  html: "<p>Dacă vezi asta, configul e OK.</p>",
-});
+main();
