@@ -1,24 +1,47 @@
-Backend API – User, Contract & Subscription Management
+Backend API – User, Contract, Subscription & Async Job Scheduling
 
-Backend REST API scris în TypeScript, construit pe Express + Prisma, care oferă:
+This project is a production-oriented backend API written in TypeScript, built on Express + Prisma, focused on clean domain design, clear responsibility boundaries, and operational robustness.
 
-autentificare JWT
+In addition to classic REST concerns (Auth, RBAC, Billing), the system includes a custom-built Async Job Scheduler, designed to handle background processing reliably without external queues.
+
+🚀 Core Features
+API & Domain
+
+JWT Authentication
 
 Role-Based Access Control (RBAC)
 
-management de utilizatori (soft delete)
+User management with soft delete
 
-management de contracte și subscripții
+Contract lifecycle management
 
-logică inițială de billing
+Subscription lifecycle management
 
-audit logging pentru acțiuni sensibile
+Initial deterministic billing logic
 
-Proiectul este orientat spre design de domeniu, separare clară a responsabilităților și bune practici de securitate.
+Audit logging for sensitive actions
+
+Async Processing
+
+Internal Async Job Scheduler
+
+Background job execution (e.g. emails, async workflows)
+
+Retry with exponential backoff
+
+Crash recovery
+
+Timeout-based recovery
+
+Worker leasing
+
+Graceful shutdown
 
 🔧 Tech Stack
 
-Node.js + Express
+Node.js
+
+Express
 
 TypeScript
 
@@ -28,18 +51,20 @@ PostgreSQL (Neon)
 
 JWT Authentication
 
-Zod – validare input
+Zod (input validation)
 
-Helmet + Rate Limiting – hardening securitate
+Helmet + Rate Limiting (security hardening)
 
-Vitest – testare service-level
+Vitest (service-level testing)
 
-🧱 Arhitectură
+Resend (email delivery)
 
-Aplicația urmează o arhitectură stratificată, cu responsabilități clare:
+🧱 Architecture
+
+The application follows a layered architecture with strict responsibility separation:
 
 ┌─────────────┐
-│  Controller │  ← HTTP / REST / Validation
+│ Controller  │  ← HTTP / REST / Validation
 └──────┬──────┘
        ↓
 ┌─────────────┐
@@ -54,92 +79,98 @@ Aplicația urmează o arhitectură stratificată, cu responsabilități clare:
 │ PostgreSQL  │
 └─────────────┘
 
-Principii
+Architectural Principles
 
-separare clară a responsabilităților
+Clear separation of concerns
 
-fără logică de business în controllers
+No business logic in controllers
 
-repository layer fără reguli de business
+Repositories contain no domain rules
 
-service layer ca sursă unică de adevăr
+Services are the single source of truth
+
+Domain-first design
+
+Infrastructure kept replaceable
 
 👤 Users vs Customers
 
-User reprezintă un actor autenticat în sistem (ADMIN / MANAGER / USER).
+User: authenticated system actor (ADMIN, MANAGER, USER)
 
-Customer reprezintă entitatea care deține Contracte și Subscriptions.
+Customer: entity owning Contracts and Subscriptions
 
-În versiunea curentă:
+Current design:
 
-customerId este un identificator generic (string)
+customerId is a generic identifier
 
-poate reprezenta un User sau o entitate externă
+Can represent a User or an external entity
 
-designul permite extindere ulterioară către Organization / Company
+Allows future extension to Organizations / Companies
 
-Lifecycle-ul Userului este independent de lifecycle-ul Contractelor și Subscriptions.
+User lifecycle is independent from Contract and Subscription lifecycles.
 
-🔐 Autentificare & RBAC
+🔐 Authentication & RBAC
 JWT Authentication
 
-JWT conține:
+JWT payload includes:
 
 userId
 
 role
 
-Tokenul este verificat în middleware
+Token is:
 
-req.user este normalizat intern
+verified in middleware
 
-Roluri
+normalized into req.user
 
-USER – acces limitat
+Roles
 
-ADMIN – poate gestiona USER și ADMIN
+USER – limited access
 
-MANAGER – rol suprem
+ADMIN – manages USER and ADMIN
 
-Reguli RBAC
+MANAGER – highest privilege
 
-MANAGER poate administra toate rolurile
+RBAC Rules
 
-ADMIN nu poate modifica MANAGER
+MANAGER can manage all roles
 
-USER are acces strict limitat
+ADMIN cannot modify MANAGER
+
+USER has strictly limited access
 
 🔄 User Lifecycle (Soft Delete)
 
-Nu se folosește delete fizic prin API.
+Users are never physically deleted via API.
 
-Stări
+States
 
-active = true → user activ
+active = true → active user
 
-active = false → user dezactivat
+active = false → deactivated user
 
-Operații
+Operations
 
 Deactivate user (DELETE /users/:id)
 
 Reactivate user (PATCH /users/:id/reactivate)
 
-Ambele:
+All operations are:
 
-sunt idempotente
+idempotent
 
-sunt auditate
+audited
 
-respectă RBAC
+RBAC-protected
 
-Dezactivarea unui user nu afectează contractele sau billingul.
+Deactivating a user does not affect contracts or billing.
 
 📄 Contract Management
 
-Contractul reprezintă un acord între sistem și un customer.
+A Contract represents an agreement between the system and a customer.
 
-Stări contract
+Contract States
 
 DRAFT
 
@@ -151,17 +182,17 @@ TERMINATED
 
 EXPIRED
 
-Reguli
+Rules
 
-doar contractele ACTIVE pot avea subscriptions active
+Only ACTIVE contracts may have active subscriptions
 
-contractele au lifecycle propriu, independent de user
+Contract lifecycle is independent of User lifecycle
 
 🔁 Subscription Management
 
-Subscription definește relația activă dintre un Contract și un Plan.
+A Subscription represents an active relationship between a Contract and a Plan.
 
-Stări subscription
+Subscription States
 
 ACTIVE
 
@@ -171,43 +202,43 @@ CANCELED
 
 EXPIRED
 
-Funcționalități
+Capabilities
 
-creare subscription
+Create subscriptions
 
-pauză / reluare
+Pause / resume
 
-schimbare plan
+Change plan
 
-urmărire billing cycle
+Track billing cycles
 
-calcul nextBillingAt și lastBilledAt
+Compute nextBillingAt and lastBilledAt
 
 💳 Billing (Initial Logic)
 
-Sistemul implementează o primă versiune de billing automat:
+The system implements an initial version of automated billing:
 
-billing per subscription
+Billing per subscription
 
-billing pe cycle (MONTHLY / YEARLY)
+Monthly / yearly cycles
 
-generare de invoice per perioadă
+Invoice generation per period
 
-protecție împotriva dublării prin billingKey
+Protection against duplicates using billingKey
 
-Billingul este:
+Billing is:
 
-determinist
+deterministic
 
-idempotent la nivel de perioadă
+idempotent per billing period
 
-separat de autentificare și RBAC
+fully decoupled from authentication & RBAC
 
 🧾 Audit Log
 
-Acțiunile administrative sunt auditate într-o tabelă separată:
+Sensitive administrative actions are recorded in an append-only audit log.
 
-AuditLog
+AuditLog Fields
 
 actorUserId
 
@@ -221,7 +252,7 @@ newValue
 
 createdAt
 
-Acțiuni auditate
+Audited Actions
 
 CHANGE_ROLE
 
@@ -229,15 +260,85 @@ DEACTIVATE_USER
 
 REACTIVATE_USER
 
-Auditul este:
+Audit log is:
 
 append-only
 
-scris exclusiv din service layer
+written exclusively from the service layer
 
-accesibil doar MANAGER
+accessible only to MANAGER
 
-📡 Endpoints principale
+⚙️ Async Job Scheduler
+
+The project includes a custom-built async job scheduler, designed as an internal module (no external queues).
+
+Supported Capabilities
+
+Asynchronous job execution
+
+Job lifecycle management:
+
+PENDING
+
+RUNNING
+
+COMPLETED
+
+FAILED
+
+DEAD
+
+Retry with exponential backoff
+
+Idempotency via jobKey
+
+Execution history & audit trail
+
+🧠 Scheduler Architecture
+┌─────────────┐
+│ JobService  │  ← Domain rules & orchestration
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│ JobExecutor │  ← Business-specific execution
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│   Worker    │  ← Polling, leasing, execution
+└─────────────┘
+
+🔁 Reliability Mechanisms
+Crash Recovery
+
+On startup, jobs left in RUNNING are recovered
+
+Ensures system consistency after process restarts
+
+Timeout-Based Recovery
+
+Jobs running longer than a configured threshold are considered stuck
+
+Automatically failed and retried if possible
+
+Worker Leasing
+
+Jobs are leased to a worker for a limited time
+
+Prevents double execution
+
+Allows safe recovery if a worker stalls or crashes
+
+Graceful Shutdown
+
+Handles SIGTERM / SIGINT
+
+Stops accepting new jobs
+
+Waits for the current job to finish
+
+Releases leases before exit
+
+📡 Main API Endpoints
 Auth
 
 POST /auth/register
@@ -256,43 +357,43 @@ PATCH /users/:id/reactivate
 
 Contracts & Subscriptions
 
-CRUD contracte
+CRUD contracts
 
-creare și administrare subscriptions
+Create & manage subscriptions
 
-schimbare plan
+Change plans
 
 Audit
 
 GET /audit (MANAGER only)
 
-🛡️ Hardening Securitate
+🛡️ Security Hardening
 
-Helmet (HTTP headers)
+Helmet (secure HTTP headers)
 
 Rate limiting
 
 Centralized error handling
 
-Zod validation
+Zod input validation
 
-Fără expunere de detalii interne
+No internal details exposed to clients
 
 🗄️ Database & Migrations
 
 PostgreSQL (Neon)
 
-Prisma schema ca sursă de adevăr
+Prisma schema as source of truth
 
-migrations versionate în Git
+Versioned migrations in Git
 
-deploy automat:
+Production deploy includes:
 
 prisma generate
 
 prisma migrate deploy
 
-▶️ Rulare locală
+▶️ Running Locally
 npm install
 npm run dev
 
@@ -300,57 +401,42 @@ Build & Run
 npm run build
 npm start
 
-🧠 Decizii de design
-
-soft delete pentru User
-
-lifecycle separat pentru User / Contract / Subscription
-
-audit pentru acțiuni critice
-
-business logic concentrat în service layer
-
-middleware pentru normalizare auth
-
-DB provider agnostic (ușor de mutat între provideri)
-
 🧪 Manual API Testing
 
-API-ul a fost testat manual în production folosind o colecție Postman.
+The API has been manually tested end-to-end using Postman.
 
-Fluxuri validate:
-- Auth & JWT issuance
-- RBAC enforcement
-- User lifecycle (deactivate / reactivate)
-- Contract configuration & activation
-- Subscription creation & lifecycle
-- Billing idempotency (invoices per period)
+Validated flows:
 
-🎯 Status
+Auth & JWT issuance
 
-✔ Auth
+RBAC enforcement
+
+User lifecycle (deactivate / reactivate)
+
+Contract lifecycle
+
+Subscription lifecycle
+
+Billing idempotency
+
+Async job execution & recovery
+
+📁 Postman collection:
+
+/postman
+
+🎯 Project Status
+
+✔ Authentication
 ✔ RBAC
-✔ Audit
-✔ Soft delete + Reactivate
+✔ Audit Logging
+✔ Soft Delete & Reactivation
 ✔ Contract Management
 ✔ Subscription Management
 ✔ Initial Billing Logic
-✔ Production deploy
-
----
-
-## 🧪 Manual API Testing (Postman)
-
-Backend-ul este testat manual end-to-end folosind o colecție Postman dedicată.
-
-Colecția acoperă:
-- Auth & JWT handling
-- Role-Based Access Control (RBAC)
-- User lifecycle (deactivate / reactivate)
-- Contract lifecycle
-- Subscription management
-- Billing & invoice idempotency
-
-📁 Documentația completă și colecția se află în:
-/postman
-
+✔ Async Job Scheduler
+✔ Crash Recovery
+✔ Timeout Recovery
+✔ Worker Leasing
+✔ Graceful Shutdown
+✔ Production Deployment
