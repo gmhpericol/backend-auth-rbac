@@ -40,6 +40,8 @@ export class Job {
 
   private executions: JobExecution[] = [];
   private readonly createdAt: Date;
+  private workerId?: string;
+  private leaseUntil?: Date;
 
   constructor(props: JobProps) {
     if (props.maxAttempts < 1) {
@@ -169,7 +171,24 @@ export class Job {
     this.nextRunAt = nextRunAt;
   }
   
-  
+  assignLease(workerId: string, now: Date, leaseMs: number): void {
+    if (this.workerId && this.leaseUntil && this.leaseUntil > now) {
+      throw new Error("Job is already leased");
+    }
+
+    this.workerId = workerId;
+    this.leaseUntil = new Date(now.getTime() + leaseMs);
+  }
+
+  clearLease(): void {
+    this.workerId = undefined;
+    this.leaseUntil = undefined;
+  }
+
+  isLeaseExpired(now: Date): boolean {
+    return !!this.leaseUntil && this.leaseUntil <= now;
+  }
+
 }
 
 

@@ -3,6 +3,7 @@ import { Job } from "../../domain/job/Job.js";
 import { randomUUID } from "crypto";
 import { exponentialBackoff } from "../policies/BackoffPolicy.js";
 import { JOB_MAX_RUNTIME_MS } from "../../config.js";
+import { WORKER_LEASE_MS } from "../../config.js";
 
 
 interface CreateJobInput {
@@ -40,17 +41,18 @@ export class JobService {
     return job;
   }
 
-  async startNextJob(now: Date): Promise<Job | null> {
+  async startNextJob(now: Date, workerId: string): Promise<Job | null> {
     const job = await this.jobRepository.findNextRunnable(now);
-    if (!job) {
-        return null;
-    }
 
+    if (!job) return null;
+
+    job.assignLease(workerId, now, WORKER_LEASE_MS);
     job.startExecution(now, randomUUID());
-    await this.jobRepository.save(job);
 
+    await this.jobRepository.save(job);
     return job;
   }
+
 
 
   async completeJob(jobId:string, now:Date): Promise<void> {
@@ -121,29 +123,23 @@ export class JobService {
 
     for (const job of runningJobs) {
       const execution = job.getActiveExecution();
-      if (!execution) continue;
-
-      const runtimeMs = now.getTime() - execution.startedAt.getTime();
-
-      if (runtimeMs < JOB_MAX_RUNTIME_MS) {
-        continue;
-      }
-
+      if (!job.isLeaseExpired(now)) continue;
+      
+      job.clearLease();
       job.failExecution(
         now,
-        `Execution timed out after ${runtimeMs}ms`
+        "Lease expired (worker likely crashed)"
       );
 
       if (job.getStatus() === "FAILED") {
         const delayMs = exponentialBackoff(job.getAttempt());
-        const nextRunAt = new Date(now.getTime() + delayMs);
-
-        job.scheduleRetry(nextRunAt);
+        job.scheduleRetry(new Date(now.getTime() + delayMs));
       }
 
       await this.jobRepository.save(job);
     }
   }
+
 
 
 }

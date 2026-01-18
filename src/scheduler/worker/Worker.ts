@@ -1,7 +1,9 @@
 import { JobService } from "../application/services/JobService.js";
 import { JobExecutor } from "./JobExecutor.js";
+import { randomUUID } from "crypto";
 
 export class Worker {
+  private readonly workerId = randomUUID();
   private isRunning = false;
 
   constructor(
@@ -11,38 +13,39 @@ export class Worker {
   ) {}
 
   start(): void {
+    console.log("[WORKER] Started", this.workerId);
     setInterval(() => this.tick(), this.intervalMs);
   }
 
-  async tick(): Promise<void> {
-    if (this.isRunning) {
-      return;
-    }
+  private async tick(): Promise<void> {
+    if (this.isRunning) return;
 
     this.isRunning = true;
 
     try {
       const now = new Date();
-      const job = await this.jobService.startNextJob(now);
+      const job = await this.jobService.startNextJob(
+        now,
+        this.workerId
+      );
 
-      if (!job) {
-        return;
-      }
+      if (!job) return;
 
       try {
         await this.executor.execute(job);
+        job.clearLease();
         await this.jobService.completeJob(job.id, new Date());
       } catch (err) {
+        job.clearLease();
         await this.jobService.failJob(
           job.id,
           new Date(),
           (err as Error).message
         );
-
-        await this.jobService.scheduleRetry(job.id, new Date());
       }
     } finally {
       this.isRunning = false;
     }
   }
 }
+
