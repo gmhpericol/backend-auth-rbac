@@ -169,4 +169,7 @@ export class Job {
     this.nextRunAt = nextRunAt;
   }
   
+  
 }
+
+

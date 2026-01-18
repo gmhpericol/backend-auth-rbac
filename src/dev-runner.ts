@@ -13,7 +13,7 @@ async function main() {
 
   
   await jobService.createJob({
-    jobKey: "delayed:welcome-email",
+    jobKey: "delayed:welcome-email2",
     type: "SEND_EMAIL",
     payload: { to: "gmhpericol@gmail.com" },
     maxAttempts: 3,

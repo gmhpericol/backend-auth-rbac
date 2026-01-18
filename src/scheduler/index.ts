@@ -16,6 +16,11 @@ const executor = new JobExecutor(emailService);
 const worker = new Worker(jobService, executor);
 
 // Public API
-export function startScheduler(): void {
+export async function startScheduler(): Promise<void> {
+  console.log("[SCHEDULER] Recovering stuck jobs...");
+  await jobService.recoverStuckJobs(new Date());
+
+  console.log("[SCHEDULER] Starting worker...");
   worker.start();
 }
+

@@ -93,4 +93,25 @@ export class JobService {
     job.scheduleRetry(nextRunAt);
     await this.jobRepository.save(job);
     }
+
+  async recoverStuckJobs(now: Date): Promise<void> {
+    const runningJobs = await this.jobRepository.findRunningJobs();
+
+    for (const job of runningJobs) {
+      job.failExecution(
+        now,
+        "Worker crashed or restarted"
+      );
+
+      if (job.getStatus() === "FAILED") {
+        const delayMs = exponentialBackoff(job.getAttempt());
+        const nextRunAt = new Date(now.getTime() + delayMs);
+
+        job.scheduleRetry(nextRunAt);
+      }
+
+      await this.jobRepository.save(job);
+    }
+  }
+
 }

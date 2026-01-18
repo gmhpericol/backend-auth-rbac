@@ -7,4 +7,5 @@ export interface JobRepository {
   findById(id: string): Promise<Job | null>;
   findByJobKey(jobKey: string): Promise<Job | null>;
   findNextRunnable(now: Date): Promise<Job | null>;
+  findRunningJobs(): Promise<Job[]>;
 }

@@ -8,6 +8,14 @@ const prisma = new PrismaClient();
 
 export class PrismaJobRepository implements JobRepository {
 
+  async findRunningJobs(): Promise<Job[]> {
+    const records = await prisma.job.findMany({
+      where: { status: JobStatus.RUNNING },
+      include: { executions: true },
+    });
+    return records.map((record) => this.mapToDomain(record));
+  }
+
   async create(job: Job): Promise<void> {
     await prisma.job.create({
       data: {
