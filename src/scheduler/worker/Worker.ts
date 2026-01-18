@@ -17,6 +17,10 @@ export class Worker {
     setInterval(() => this.tick(), this.intervalMs);
   }
 
+  async tickOnce(): Promise<void> {
+    await this.tick();
+  }
+
   private async tick(): Promise<void> {
     if (this.isRunning) return;
 

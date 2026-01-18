@@ -19,7 +19,7 @@ describe("Worker", () => {
     });
 
     const worker = new Worker(service as any, executor as any);
-    await worker.tick();
+    await worker.tickOnce();
 
     expect(executor.execute).toHaveBeenCalled();
     expect(service.completeJob).toHaveBeenCalled();
