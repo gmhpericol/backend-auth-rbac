@@ -2,6 +2,8 @@ import { JobRepository } from "../JobRepository.js";
 import { Job } from "../../domain/job/Job.js";
 import { randomUUID } from "crypto";
 import { exponentialBackoff } from "../policies/BackoffPolicy.js";
+import { JOB_MAX_RUNTIME_MS } from "../../config.js";
+
 
 interface CreateJobInput {
   jobKey: string;
@@ -113,5 +115,35 @@ export class JobService {
       await this.jobRepository.save(job);
     }
   }
+
+  async recoverTimedOutJobs(now: Date): Promise<void> {
+    const runningJobs = await this.jobRepository.findRunningJobs();
+
+    for (const job of runningJobs) {
+      const execution = job.getActiveExecution();
+      if (!execution) continue;
+
+      const runtimeMs = now.getTime() - execution.startedAt.getTime();
+
+      if (runtimeMs < JOB_MAX_RUNTIME_MS) {
+        continue;
+      }
+
+      job.failExecution(
+        now,
+        `Execution timed out after ${runtimeMs}ms`
+      );
+
+      if (job.getStatus() === "FAILED") {
+        const delayMs = exponentialBackoff(job.getAttempt());
+        const nextRunAt = new Date(now.getTime() + delayMs);
+
+        job.scheduleRetry(nextRunAt);
+      }
+
+      await this.jobRepository.save(job);
+    }
+  }
+
 
 }

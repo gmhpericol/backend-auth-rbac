@@ -5,6 +5,7 @@ export class JobExecutor {
   constructor(private readonly emailService: EmailService) {}
 
   async execute(job: Job): Promise<void> {
+
     switch (job.getType()) {
       case "SEND_EMAIL":
         await this.handleSendEmail(job);

@@ -13,12 +13,12 @@ async function main() {
 
   
   await jobService.createJob({
-    jobKey: "delayed:welcome-email2",
+    jobKey: "manual:crash-test5",
     type: "SEND_EMAIL",
     payload: { to: "gmhpericol@gmail.com" },
     maxAttempts: 3,
-    runAt: new Date(Date.now() + 60_000), // 1 minut
   });
+
 
   console.log("Job created.");
 }
