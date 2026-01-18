@@ -7,13 +7,13 @@ import { jobService } from "./scheduler/index.js";
 
 async function main() {
   console.log("Starting scheduler...");
-  startScheduler();
+  await startScheduler();
 
   console.log("Creating test job...");
 
   
   await jobService.createJob({
-    jobKey: "manual:crash-test5",
+    jobKey: "manual:crash-test7",
     type: "SEND_EMAIL",
     payload: { to: "gmhpericol@gmail.com" },
     maxAttempts: 3,
